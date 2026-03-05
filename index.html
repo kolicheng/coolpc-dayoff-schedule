@@ -19,7 +19,7 @@
         }
         
         .container {
-            max-width: 1400px;
+            max-width: 900px;
             margin: 0 auto;
         }
         
@@ -54,7 +54,7 @@
         }
         
         select {
-            min-width: 200px;
+            min-width: 250px;
         }
         
         button {
@@ -66,7 +66,6 @@
         
         button:hover {
             background: #45a049;
-            transform: translateY(-2px);
         }
         
         .legend {
@@ -96,30 +95,34 @@
         .legend-color.喪假 { background: #9c27b0; }
         .legend-color.病假 { background: #f44336; }
         
-        .department-section {
+        .calendar {
             background: white;
             border-radius: 15px;
             padding: 20px;
-            margin-bottom: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
         
-        .department-header {
+        .calendar-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
             border-bottom: 2px solid #eee;
         }
         
-        .department-header h2 {
+        .calendar-header h2 {
             color: #333;
-            font-size: 1.3em;
+            font-size: 1.5em;
         }
         
-        .department-stats {
-            color: #666;
+        .month-nav {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .month-nav button {
+            padding: 8px 15px;
             font-size: 14px;
         }
         
@@ -132,16 +135,15 @@
         .day-header {
             background: #333;
             color: white;
-            padding: 8px;
+            padding: 12px;
             text-align: center;
             font-weight: bold;
             border-radius: 4px;
-            font-size: 14px;
         }
         
         .day {
-            min-height: 80px;
-            padding: 5px;
+            min-height: 100px;
+            padding: 8px;
             background: #f9f9f9;
             border-radius: 4px;
             border: 1px solid #eee;
@@ -168,17 +170,17 @@
         .day-number {
             font-weight: bold;
             color: #333;
-            margin-bottom: 3px;
-            font-size: 14px;
+            margin-bottom: 5px;
+            font-size: 16px;
         }
         
         .leave-person {
             background: #ff9800;
             color: white;
-            padding: 3px 5px;
-            border-radius: 3px;
-            font-size: 11px;
-            margin-bottom: 2px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-bottom: 3px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -189,82 +191,32 @@
         .leave-person.喪假 { background: #9c27b0; }
         .leave-person.病假 { background: #f44336; }
         
-        .week-summary {
-            background: #f5f5f5;
+        .stats {
+            margin-top: 20px;
             padding: 15px;
+            background: #f5f5f5;
             border-radius: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .week-summary h3 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-        
-        .week-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
-        }
-        
-        .week-day {
-            background: white;
-            padding: 10px;
-            border-radius: 8px;
             text-align: center;
         }
         
-        .week-day-name {
-            font-weight: bold;
+        .stats-text {
             color: #666;
-            font-size: 12px;
-        }
-        
-        .week-day-num {
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
-        }
-        
-        .week-day-leaves {
-            margin-top: 5px;
-            font-size: 11px;
-            color: #666;
-        }
-        
-        .month-nav {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        
-        .month-nav button {
-            padding: 8px 15px;
             font-size: 14px;
-        }
-        
-        #currentMonth {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #333;
-            min-width: 150px;
-            text-align: center;
         }
 
         @media (max-width: 768px) {
             .calendar-grid {
-                grid-template-columns: repeat(7, 1fr);
-                font-size: 10px;
+                font-size: 11px;
             }
             
             .day {
-                min-height: 50px;
-                padding: 2px;
+                min-height: 60px;
+                padding: 3px;
             }
             
             .leave-person {
-                font-size: 9px;
-                padding: 1px 2px;
+                font-size: 10px;
+                padding: 2px 4px;
             }
         }
     </style>
@@ -282,23 +234,38 @@
         
         <div class="controls">
             <div class="month-nav">
-                <button onclick="changeMonth(-1)">◀</button>
-                <span id="currentMonth">2026年3月</span>
-                <button onclick="changeMonth(1)">▶</button>
+                <button onclick="changeMonth(-1)">◀ 上個月</button>
+                <span id="currentMonth" style="font-size: 1.2em; font-weight: bold; color: #333; min-width: 120px; text-align: center;">2026年3月</span>
+                <button onclick="changeMonth(1)">下個月 ▶</button>
             </div>
             
-            <select id="deptSelect" onchange="renderAllDepartments()">
-                <option value="all">全部部門</option>
+            <select id="deptSelect" onchange="renderCalendar()">
+                <option value="">-- 請選擇部門 --</option>
             </select>
             
-            <button onclick="loadData()">🔄 更新</button>
+            <button onclick="renderCalendar()">🔄 更新</button>
         </div>
 
-        <div id="calendarContainer"></div>
+        <div class="calendar">
+            <div class="calendar-grid">
+                <div class="day-header">日</div>
+                <div class="day-header">一</div>
+                <div class="day-header">二</div>
+                <div class="day-header">三</div>
+                <div class="day-header">四</div>
+                <div class="day-header">五</div>
+                <div class="day-header">六</div>
+            </div>
+            
+            <div class="calendar-grid" id="calendarBody"></div>
+            
+            <div class="stats" id="stats">
+                <span class="stats-text">請選擇部門</span>
+            </div>
+        </div>
     </div>
 
     <script>
-        // 部門請假資料（從網站爬取的數據）
         const allLeaveData = {
             "北旗艦": {
                 3: ["李世喬(排休)", "陳彥閎(排休)", "黃政學(排休)"],
@@ -306,81 +273,34 @@
                 11: ["李世喬", "陳彥閎"],
                 12: ["黃政學"]
             },
-            "三創店": {
-                6: ["董巨揚(排休)", "江玉雯(排休)", "李冠均(排休)"]
-            },
-            "新現代1F": {
-                6: ["王彥淳(排休)", "唐士皓(排休)", "黃柏元(排休)", "唐士皓", "黃柏元"]
-            },
-            "現代店": {
-                8: ["李炫錚(排休)", "陳冠智(排休)", "黃裕鈞(排休)", "張奕偉(特休)", "劉奕德(特休)", "劉奕德"]
-            },
-            "光華店": {
-                6: ["白欣巧(排休)", "王信雄(排休)", "陳浩勻(排休)"]
-            },
-            "庫房": {
-                6: ["李偉玄(排休)", "謝明修(排休)", "翁御玹(排休)"]
-            },
-            "工程部": {
-                12: ["林隆盛(排休)", "梁瑞峰(喪假)", "謝伯承(排休)", "王昱捷(排休)", "梁瑞峰", "陳正展(排休)", "王佩昀(特休)", "梁哲毓(排休)", "詹皓翔(排休)"]
-            },
-            "維修部": {
-                7: ["林俞安(排休)", "林峙仲(排休)", "戴浩翔(排休)", "薛佳文(排休)", "蔡松成(排休)", "薛佳文"]
-            },
-            "電子商務部": {
-                16: ["吳翰柏(排休)", "汪書鈺(排休)", "林義勝(排休)", "陳怡君(排休)", "黃正賢(排休)", "黃麗梅(排休)", "李采瀚(排休)", "徐詠俊(排休)", "陳立哲(排休)", "吳奕憲(排休)", "吳翰柏", "陳立哲", "陳信仲(排休)"]
-            },
-            "五股廠": {
-                11: ["曾家寶(排休)", "潘俐辰(特休)", "盧世凱(排休)", "李冠臻(排休)", "曾家寶", "盧世凱", "藍永昌(排休)", "陳迪信(排休)", "潘俐辰"]
-            },
-            "採購部": {
-                11: ["王振泰(排休)", "李振威(排休)", "沈淑娟(排休)", "邱庭方(排休)", "張仁杰(排休)", "張議陽(排休)", "黃珮涵(排休)", "黃渝文(排休)", "黃偉哲(排休)", "游智崴(排休)"]
-            },
-            "行銷部": {
-                8: ["林榮邦(排休)", "范揚正(排休)", "賴品成(排休)", "范揚正", "簡志穎(排休)", "范揚正(特休)", "簡志穎", "李庭安(排休)"]
-            },
-            "蝦皮電商平台": {
-                10: ["方鈺傑(排休)", "李志仁(排休)", "林益豪(排休)", "黃政哲(特休)", "林益豪", "胡逸仙(排休)", "蘇威又(排休)"]
-            },
-            "建教生": {
-                19: ["呂鑫鴻(排休)", "林鼎碩(排休)", "洪鼎軒(排休)", "紀年育(排休)", "陳宥安(排休)", "陳泰鋮(排休)", "黃茂翔(排休)", "繆騰毅(排休)", "呂鑫鴻", "林琮祐(排休)", "林頎恩(排休)", "黃于豪(排休)", "黃茂翔"]
-            },
-            "桃園店": {
-                8: ["陳宣佑(排休)", "陳柏安(排休)", "呂紹光(排休)", "陳柏安", "賴昱承(排休)"]
-            },
-            "中壢店": {
-                11: ["陳文浩(排休)", "曾柏維(排休)", "韋星宇(排休)", "連展逸(排休)", "陳振翼(排休)", "朱陳淳煜(排休)", "徐正賓(排休)"]
-            },
-            "新竹店": {
-                11: ["林家宇(排休)", "曹峻豪(喪假)", "黎政賢(排休)", "林俊諺(排休)", "莊賀喬(排休)", "鍾騏宇(排休)", "曹峻豪", "彭凱威(排休)"]
-            },
-            "台中一店": {
-                6: ["楊士葆(排休)", "鄭翰興(排休)", "蔡宗峻(排休)", "鄭翰興(特休)", "曾偉鈞(排休)"]
-            },
-            "台中二店": {
-                13: ["甘期朧(特休)", "李長益(排休)", "林恩佑(排休)", "梁傑凱(排休)", "郭桓丞(排休)", "甘期朧", "郭桓丞", "陳明遠(排休)", "黃冠沂(排休)", "潘澤綸(排休)", "甘期朧(排休)", "郭桓丞(特休)", "陳仕豪(排休)"]
-            },
-            "彰化店": {
-                6: ["陳冠廷(排休)", "周錦男(排休)", "萬宗鑫(排休)", "葉郁誠(排休)"]
-            },
-            "嘉義店": {
-                7: ["鄭凱元(排休)", "鍾禎(排休)", "簡士傑(排休)"]
-            },
-            "台南店": {
-                15: ["何嘉益(排休)", "林柏良(特休)", "陳智成(排休)", "王柳翔(排休)", "林柏良", "張哲瑋(排休)", "楊甯淵(排休)"]
-            },
-            "高雄店": {
-                15: ["吳俊豪(排休)", "林耀信(排休)", "郭宇哲(排休)", "宋品緯(排休)", "高維謙(排休)", "曾子豪(排休)", "葉宇宸(排休)"]
-            },
-            "宜蘭店": {
-                6: ["姜淳文(病假)", "廖偉聖(排休)", "陳琬婷(排休)", "姜淳文"]
-            }
+            "三創店": { 6: ["董巨揚(排休)", "江玉雯(排休)", "李冠均(排休)"] },
+            "新現代1F": { 6: ["王彥淳(排休)", "唐士皓(排休)", "黃柏元(排休)"] },
+            "現代店": { 8: ["李炫錚(排休)", "陳冠智(排休)", "黃裕鈞(排休)", "張奕偉(特休)", "劉奕德(特休)"] },
+            "光華店": { 6: ["白欣巧(排休)", "王信雄(排休)", "陳浩勻(排休)"] },
+            "庫房": { 6: ["李偉玄(排休)", "謝明修(排休)", "翁御玹(排休)"] },
+            "工程部": { 12: ["林隆盛(排休)", "梁瑞峰(喪假)", "謝伯承(排休)", "王昱捷(特休)", "陳正展(排休)"] },
+            "維修部": { 7: ["林俞安(排休)", "林峙仲(排休)", "戴浩翔(排休)", "薛佳文(排休)"] },
+            "電子商務部": { 16: ["吳翰柏(排休)", "汪書鈺(排休)", "林義勝(排休)", "陳怡君(排休)", "黃正賢(排休)", "黃麗梅(排休)"] },
+            "五股廠": { 11: ["曾家寶(排休)", "潘俐辰(特休)", "盧世凱(排休)", "李冠臻(排休)"] },
+            "採購部": { 11: ["王振泰(排休)", "李振威(排休)", "沈淑娟(排休)", "邱庭方(排休)", "張仁杰(排休)"] },
+            "行銷部": { 8: ["林榮邦(排休)", "范揚正(排休)", "賴品成(排休)", "簡志穎(排休)"] },
+            "蝦皮電商平台": { 10: ["方鈺傑(排休)", "李志仁(排休)", "林益豪(排休)", "黃政哲(特休)"] },
+            "建教生": { 19: ["呂鑫鴻(排休)", "林鼎碩(排休)", "洪鼎軒(排休)", "紀年育(排休)", "陳宥安(排休)"] },
+            "桃園店": { 8: ["陳宣佑(排休)", "陳柏安(排休)", "呂紹光(排休)"] },
+            "中壢店": { 11: ["陳文浩(排休)", "曾柏維(排休)", "韋星宇(排休)", "連展逸(排休)"] },
+            "新竹店": { 11: ["林家宇(排休)", "曹峻豪(喪假)", "黎政賢(排休)", "林俊諺(排休)"] },
+            "台中一店": { 6: ["楊士葆(排休)", "鄭翰興(排休)", "蔡宗峻(排休)", "曾偉鈞(排休)"] },
+            "台中二店": { 13: ["甘期朧(特休)", "李長益(排休)", "林恩佑(排休)", "梁傑凱(排休)", "郭桓丞(排休)"] },
+            "彰化店": { 6: ["陳冠廷(排休)", "周錦男(排休)", "萬宗鑫(排休)"] },
+            "嘉義店": { 7: ["鄭凱元(排休)", "鍾禎(排休)", "簡士傑(排休)"] },
+            "台南店": { 15: ["何嘉益(排休)", "林柏良(特休)", "陳智成(排休)", "王柳翔(排休)"] },
+            "高雄店": { 15: ["吳俊豪(排休)", "林耀信(排休)", "郭宇哲(排休)", "宋品緯(排休)"] },
+            "宜蘭店": { 6: ["姜淳文(病假)", "廖偉聖(排休)", "陳琬婷(排休)"] }
         };
 
-        let currentMonth = 2; // 3月 (0-indexed)
+        let currentMonth = 2;
         let currentYear = 2026;
 
-        // 初始化部門下拉選單
         function initDeptSelect() {
             const select = document.getElementById('deptSelect');
             const departments = Object.keys(allLeaveData).sort();
@@ -392,38 +312,21 @@
             });
         }
 
-        function getMonthName(month) {
-            const months = ["1月", "2月", "3月", "4月", "5月", "6月", 
-                          "7月", "8月", "9月", "10月", "11月", "12月"];
-            return months[month];
-        }
-
-        function renderDepartmentCalendar(deptName, deptData) {
+        function renderCalendar() {
+            const selectedDept = document.getElementById('deptSelect').value;
+            document.getElementById('currentMonth').textContent = `${currentYear}年${currentMonth + 1}月`;
+            
             const firstDay = new Date(currentYear, currentMonth, 1).getDay();
             const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
             const daysInPrevMonth = new Date(currentYear, currentMonth, 0).getDate();
             
             const today = new Date();
-            
-            let html = `
-                <div class="department-section">
-                    <div class="department-header">
-                        <h2>🏢 ${deptName}</h2>
-                        <span class="department-stats">${Object.keys(deptData).length} 天有人請假</span>
-                    </div>
-                    <div class="calendar-grid">
-                        <div class="day-header">日</div>
-                        <div class="day-header">一</div>
-                        <div class="day-header">二</div>
-                        <div class="day-header">三</div>
-                        <div class="day-header">四</div>
-                        <div class="day-header">五</div>
-                        <div class="day-header">六</div>
-            `;
+            const calendarBody = document.getElementById('calendarBody');
+            calendarBody.innerHTML = '';
             
             // 上個月
             for (let i = firstDay - 1; i >= 0; i--) {
-                html += `<div class="day other-month"><div class="day-number">${daysInPrevMonth - i}</div></div>`;
+                calendarBody.innerHTML += `<div class="day other-month"><div class="day-number">${daysInPrevMonth - i}</div></div>`;
             }
             
             // 當月
@@ -440,8 +343,9 @@
                 
                 let dayContent = `<div class="day-number">${day}</div>`;
                 
-                if (deptData[day]) {
-                    deptData[day].forEach(person => {
+                // 顯示選中部門的請假人員
+                if (selectedDept && allLeaveData[selectedDept] && allLeaveData[selectedDept][day]) {
+                    allLeaveData[selectedDept][day].forEach(person => {
                         let leaveType = '排休';
                         if (person.includes('特休')) leaveType = '特休';
                         else if (person.includes('喪假')) leaveType = '喪假';
@@ -451,59 +355,39 @@
                     });
                 }
                 
-                html += `<div class="${dayClass}">${dayContent}</div>`;
+                calendarBody.innerHTML += `<div class="${dayClass}">${dayContent}</div>`;
             }
             
             // 補齊
             const totalCells = firstDay + daysInMonth;
             const remainingCells = 7 - (totalCells % 7);
-            if (remainingCells < 7) {
+            if (remainingCells < 7 && remainingCells > 0) {
                 for (let i = 1; i <= remainingCells; i++) {
-                    html += `<div class="day other-month"><div class="day-number">${i}</div></div>`;
+                    calendarBody.innerHTML += `<div class="day other-month"><div class="day-number">${i}</div></div>`;
                 }
             }
             
-            html += '</div></div>';
-            return html;
-        }
-
-        function renderAllDepartments() {
-            const selectedDept = document.getElementById('deptSelect').value;
-            document.getElementById('calendarContainer').innerHTML = '';
-            
-            document.getElementById('currentMonth').textContent = `${currentYear}年${getMonthName(currentMonth)}`;
-            
-            if (selectedDept === 'all') {
-                // 顯示所有部門
-                Object.entries(allLeaveData).forEach(([dept, data]) => {
-                    document.getElementById('calendarContainer').innerHTML += renderDepartmentCalendar(dept, data);
-                });
+            // 統計
+            const stats = document.getElementById('stats');
+            if (selectedDept && allLeaveData[selectedDept]) {
+                const deptData = allLeaveData[selectedDept];
+                let totalDays = Object.keys(deptData).length;
+                let totalPeople = 0;
+                Object.values(deptData).forEach(arr => totalPeople += arr.length);
+                stats.innerHTML = `<span class="stats-text">🏢 ${selectedDept}：共 ${totalDays} 天有人請假，${totalPeople} 人次</span>`;
             } else {
-                // 只顯示選取的部門
-                document.getElementById('calendarContainer').innerHTML = renderDepartmentCalendar(selectedDept, allLeaveData[selectedDept]);
+                stats.innerHTML = `<span class="stats-text">請選擇部門</span>`;
             }
         }
 
         function changeMonth(delta) {
             currentMonth += delta;
-            if (currentMonth > 11) {
-                currentMonth = 0;
-                currentYear++;
-            } else if (currentMonth < 0) {
-                currentMonth = 11;
-                currentYear--;
-            }
-            renderAllDepartments();
+            if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+            else if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+            renderCalendar();
         }
 
-        function loadData() {
-            alert('資料已更新！');
-            renderAllDepartments();
-        }
-
-        // 初始化
         initDeptSelect();
-        renderAllDepartments();
     </script>
 </body>
 </html>
